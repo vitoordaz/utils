@@ -1,0 +1,21 @@
+{
+  "name": "utils",
+  "main": [
+    "dist/utils.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:vitoordaz/utils.git"
+  },
+  "dependencies": {
+    "backbone": "1.2.0",
+    "jquery": "2.1.4",
+    "underscore": "1.8.3",
+    "chrome-localstorage": "latest"
+  },
+  "devDependencies": {
+    "requirejs": "latest",
+    "mocha": "latest",
+    "should": "latest"
+  }
+}
