@@ -10776,7 +10776,6 @@ define('localstorage',[],function() {
   // Flag to indicate weather init function was called or not.
   var INIT_WAS_CALLED = false;
   var CACHE = {};
-  var SUPPORT_LOCAL_STORAGE = !!window.localStorage;
   var IS_CHROME_APP = window.chrome && chrome.storage && chrome.storage.local;
 
   if (IS_CHROME_APP) {
@@ -10840,10 +10839,10 @@ define('localstorage',[],function() {
 
   return {
     init: defer,
-    clear: localStorage.clear,
-    setItem: localStorage.setItem,
-    getItem: localStorage.getItem,
-    removeItem: localStorage.removeItem
+    clear: localStorage.clear.bind(localStorage),
+    setItem: localStorage.setItem.bind(localStorage),
+    getItem: localStorage.getItem.bind(localStorage),
+    removeItem: localStorage.removeItem.bind(localStorage)
   };
 });
 
