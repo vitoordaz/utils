@@ -57,7 +57,7 @@ module.exports = function(grunt) {
           optimize: 'none',
           name: 'utils',
           out: 'dist/utils.js',
-          exclude: ['underscore', 'jquery', 'Backbone'],
+          exclude: ['underscore', 'jquery', 'Backbone', 'localstorage'],
           paths: paths
         }
       },
