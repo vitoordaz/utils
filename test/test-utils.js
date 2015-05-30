@@ -40,6 +40,63 @@ define(['should', 'Backbone', 'utils'], function(should, Backbone, utils) {
       });
     });
 
+    describe('Test getProperty', function() {
+      it('should return value of "not nested" properties', function() {
+        should(utils.getProperty({blah: 1}, 'blah')).be.eql(1);
+      });
+
+      it('should return value of "nested" properties', function() {
+        should(utils.getProperty({
+          foo: {
+            bar: 1
+          }
+        }, 'foo.bar')).be.eql(1);
+      });
+
+      it('should return works with arrays', function() {
+        should(utils.getProperty({foo: []}, 'foo.length')).be.eql(0);
+        should(utils.getProperty({foo: [1, 2, 3]}, 'foo.length')).be.eql(3);
+      });
+
+      it('should return undefined if property does not exist', function() {
+        should(utils.getProperty({
+          foo: 'string'
+        }, 'foo.__does_not_exist__')).be.undefined;
+
+        should(utils.getProperty({
+          foo: 'string'
+        }, 'foo.bar.something')).be.undefined;
+      });
+
+      it('should return property of Backbone.Model', function() {
+        var m = new Backbone.Model({
+          foo: {
+            bar: 1
+          }
+        });
+        should(utils.getProperty(m, 'foo')).be.eql({bar: 1});
+        should(utils.getProperty(m, 'foo.bar')).be.eql(1);
+
+        m = new Backbone.Model({
+          foo: new Backbone.Model({
+            bar: 1
+          })
+        });
+        should(utils.getProperty(m, 'foo.bar')).be.eql(1);
+
+        m = new Backbone.Model({
+          foo: new Backbone.Collection([{
+            id: 1
+          }, {
+            id: 2
+          }, {
+            id: 3
+          }])
+        });
+        should(utils.getProperty(m, 'foo.length')).be.eql(3);
+      });
+    });
+
     describe('Test interpolateValueString', function() {
       it('should not do anything with empty values', function() {
         var model = new Backbone.Model();
