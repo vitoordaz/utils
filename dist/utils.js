@@ -58,9 +58,10 @@ define('utils/credentials',['localstorage'], function(localstorage) {
 define('utils',[
   'underscore',
   'jquery',
+  'Backbone',
   'exports',
   'utils/credentials'
-], function(_, $, exports, credentials) {
+], function(_, $, Backbone, exports, credentials) {
   'use strict';
 
   exports.credentials = credentials;
@@ -208,13 +209,12 @@ define('utils',[
     var parts = property.split('.');
     var value = obj;
     var part;
+    var index;
     for (var i = 0;
          i < parts.length && !_.isUndefined(value) && !_.isNull(value);
          ++i) {
       part = parts[i];
-      if (_.functions(value).indexOf('get') < 0) {
-        value = value[part];
-      } else {
+      if (value instanceof Backbone.Model) {
         // If object has a get method then we should try to use it first to
         // get property value.
         if (_.isUndefined(value.get(part)) && part in value) {
@@ -222,6 +222,21 @@ define('utils',[
         } else {
           value = value.get(part);
         }
+      } else if (value instanceof Backbone.Collection) {
+        // It seems that value is a Backbone.Collection we should use at to
+        // get item by index.
+        index = parseInt(part);
+        if (!_.isNaN(index)) {
+          value = value.at(index);
+        } else {
+          if (_.isUndefined(value.get(part)) && part in value) {
+            value = value[part];
+          } else {
+            value = value.get(part);
+          }
+        }
+      } else {
+        value = value[part];
       }
     }
     return value;

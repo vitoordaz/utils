@@ -95,10 +95,26 @@ define(['should', 'Backbone', 'utils'], function(should, Backbone, utils) {
         });
         should(utils.getProperty(m, 'foo.length')).be.eql(3);
       });
+
+      it('should return item of array', function() {
+        should(utils.getProperty({foo: [1, 2, 3]}, 'foo.0')).be.eql(1);
+        should(utils.getProperty({foo: [1, 2, 3]}, 'foo.2')).be.eql(3);
+      });
+
+      it('should return item of Backbone.Collection', function() {
+        var collection = new Backbone.Collection([{
+          id: 'a'
+        }, {
+          id: 'b'
+        }, {
+          id: 'c'
+        }]);
+        should(utils.getProperty({foo: collection}, 'foo.1').id).be.eql('b');
+      });
     });
 
     describe('Test interpolateValueString', function() {
-      it('should not do anything with empty values', function() {
+      it('should do not do anything with empty values', function() {
         var model = new Backbone.Model();
         should(utils.interpolateValueString(model)).be.undefined;
         should(utils.interpolateValueString(model, '')).be.eql('');
