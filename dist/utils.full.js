@@ -12923,18 +12923,23 @@ define('utils',[
    */
   exports.setProperty = function(obj, property, value) {
     var parts = property.split('.');
-    parts.reverse();
-    var d = {};
-    var v = value;
     _.each(parts.slice(0, parts.length - 1), function(part) {
-      d[part] = v;
-      v = d;
-      d = {};
+      if (obj instanceof Backbone.Model) {
+        if (_.isUndefined(obj.get(part))) {
+          obj.set(part, {});
+        }
+        obj = obj.get(part);
+      } else {
+        if (_.isUndefined(obj[part])) {
+          obj[part] = {};
+        }
+        obj = obj[part];
+      }
     });
     if (obj instanceof Backbone.Model) {
-      obj.set(_.last(parts), v);
+      obj.set(_.last(parts), value);
     } else {
-      obj[_.last(parts)] = v;
+      obj[_.last(parts)] = value;
     }
   };
 

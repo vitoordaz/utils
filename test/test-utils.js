@@ -115,14 +115,17 @@ define(['should', 'Backbone', 'utils'], function(should, Backbone, utils) {
 
     describe('Test setProperty', function() {
       it('should set property value', function() {
-        var obj = {};
+        var obj;
 
+        obj = {};
         utils.setProperty(obj, 'prop', '1');
         should(obj).be.eql({prop: '1'});
 
+        obj = {};
         utils.setProperty(obj, 'prop.a', '1');
         should(obj).be.eql({prop: {a: '1'}});
 
+        obj = {};
         utils.setProperty(obj, 'prop.a.b', '1');
         should(obj).be.eql({prop: {a: {b: '1'}}});
 
@@ -130,6 +133,7 @@ define(['should', 'Backbone', 'utils'], function(should, Backbone, utils) {
         utils.setProperty(obj, 'a', '1');
         should(obj.toJSON()).be.eql({a: '1'});
 
+        obj = new Backbone.Model();
         utils.setProperty(obj, 'a.b.c', '1');
         should(obj.toJSON()).be.eql({a: {b: {c:'1'}}});
       });
