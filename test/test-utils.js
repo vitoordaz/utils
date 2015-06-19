@@ -113,6 +113,28 @@ define(['should', 'Backbone', 'utils'], function(should, Backbone, utils) {
       });
     });
 
+    describe('Test setProperty', function() {
+      it('should set property value', function() {
+        var obj = {};
+
+        utils.setProperty(obj, 'prop', '1');
+        should(obj).be.eql({prop: '1'});
+
+        utils.setProperty(obj, 'prop.a', '1');
+        should(obj).be.eql({prop: {a: '1'}});
+
+        utils.setProperty(obj, 'prop.a.b', '1');
+        should(obj).be.eql({prop: {a: {b: '1'}}});
+
+        obj = new Backbone.Model();
+        utils.setProperty(obj, 'a', '1');
+        should(obj.toJSON()).be.eql({a: '1'});
+
+        utils.setProperty(obj, 'a.b.c', '1');
+        should(obj.toJSON()).be.eql({a: {b: {c:'1'}}});
+      });
+    });
+
     describe('Test interpolateValueString', function() {
       it('should do not do anything with empty values', function() {
         var model = new Backbone.Model();

@@ -198,9 +198,33 @@ define('utils',[
   var VARIABLE_REGEX = /^{{\s*(\S*)\s*}}$/;
 
   /**
+   * Recursively sets property value.
+   * @param obj {Backbone.Model|{}} object to set property.
+   * @param property {string} property name.
+   * @param value {*} property value.
+   */
+  exports.setProperty = function(obj, property, value) {
+    var parts = property.split('.');
+    parts.reverse();
+    var d = {};
+    var v = value;
+    _.each(parts.slice(0, parts.length - 1), function(part) {
+      d[part] = v;
+      v = d;
+      d = {};
+    });
+    if (obj instanceof Backbone.Model) {
+      obj.set(_.last(parts), v);
+    } else {
+      obj[_.last(parts)] = v;
+    }
+  };
+
+  /**
    * Recursively gets property of a given object.
    * @param obj {Backbone.Model|{}} object to get property.
    * @param property {string} property name.
+   * @returns {*} property value.
    */
   exports.getProperty = function(obj, property) {
     if (_.isUndefined(property)) {
@@ -262,9 +286,9 @@ define('utils',[
 
   /**
    * Interpolate variables in string using given context.
-   * @param context {Backbone.Model} model object
-   * @param value {string} string with variables to interpolate
-   * @returns {string} string with interpolated variables
+   * @param context {Backbone.Model} model object.
+   * @param value {string} string with variables to interpolate.
+   * @returns {string} string with interpolated variables.
    */
   exports.interpolateValueString = function(context, value) {
     if (_.isString(value)) {
