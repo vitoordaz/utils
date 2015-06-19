@@ -153,10 +153,14 @@ define([
     var parts = property.split('.');
     _.each(parts.slice(0, parts.length - 1), function(part) {
       if (obj instanceof Backbone.Model) {
-        if (_.isUndefined(obj.get(part))) {
-          obj.set(part, {});
+        if (!_.isUndefined(obj[part])) {
+          obj = obj[part];
+        } else {
+          if (_.isUndefined(obj.get(part))) {
+            obj.set(part, {});
+          }
+          obj = obj.get(part);
         }
-        obj = obj.get(part);
       } else {
         if (_.isUndefined(obj[part])) {
           obj[part] = {};
