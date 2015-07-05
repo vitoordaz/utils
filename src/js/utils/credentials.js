@@ -15,7 +15,12 @@ define(['localstorage'], function(localstorage) {
      */
     get: function(cb) {
       if (cb) {
-        localstorage.getItem('credentials', cb);
+        localstorage.getItem('credentials', function(v) {
+          try {
+            v = JSON.parse(v);
+          } catch(e) {}
+          cb(v);
+        });
       } else {
         var v = localstorage.getItem('credentials');
         try {
