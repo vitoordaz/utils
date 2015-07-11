@@ -12725,7 +12725,7 @@ define('utils/credentials',['jquery', 'localstorage'], function($, localstorage)
   return {
     /**
      * Loads user credentials from local storage.
-     * @returns {$.Promise}
+     * @returns {$.Deferred}
      */
     get: function() {
       var deferred = $.Deferred();
@@ -12741,6 +12741,7 @@ define('utils/credentials',['jquery', 'localstorage'], function($, localstorage)
     /**
      * Updates stored user credentials and send message 'credentials:updated'.
      * @param credentials {{key: string, secret: string}} user credentials.
+     * @returns {$.Deferred}
      */
     set: function(credentials) {
       var sendMessage = function() {
