@@ -12719,37 +12719,30 @@ define('localstorage',[],function() {
 /* jshint strict: true, browser: true */
 /* globals define, chrome */
 
-define('utils/credentials',['localstorage'], function(localstorage) {
+define('utils/credentials',['jquery', 'localstorage'], function($, localstorage) {
   'use strict';
 
   return {
     /**
-     * Loads user credentials.
-     * If callback function is given credentials will be passed to callback
-     * function else this function will return credentials.
-     * @param cb {function} callback function to call after credentials loaded.
-     * @returns {{key: string, secret: string}} if callback function is not
-     *                                          given.
+     * Loads user credentials from local storage.
+     * @returns {$.Promise}
      */
-    get: function(cb) {
-      if (cb) {
-        localstorage.getItem('credentials', cb);
-      } else {
-        var v = localstorage.getItem('credentials');
+    get: function() {
+      var deferred = $.Deferred();
+      localstorage.getItem('credentials', function(v) {
         try {
-          return JSON.parse(v);
+          deferred.resolve(JSON.parse(v));
         } catch(e) {
-          return v;
+          deferred.reject(e);
         }
-      }
+      });
+      return deferred;
     },
     /**
      * Updates stored user credentials and send message 'credentials:updated'.
      * @param credentials {{key: string, secret: string}} user credentials.
-     * @param cb {function} callback function to call after credentials
-     *                      updated.
      */
-    set: function(credentials, cb) {
+    set: function(credentials) {
       var sendMessage = function() {
         if (chrome && chrome.runtime) {
           chrome.runtime.sendMessage(chrome.runtime.id, {
@@ -12758,14 +12751,12 @@ define('utils/credentials',['localstorage'], function(localstorage) {
         }
       };
       credentials = JSON.stringify(credentials);
-      if (cb) {
-        localstorage.setItem('credentials', credentials, function() {
-          cb();
-          sendMessage();
-        });
-      } else {
-        localstorage.setItem('credentials', credentials, sendMessage);
-      }
+      var deferred = $.Deferred();
+      localstorage.setItem('credentials', credentials, function() {
+        deferred.resolve();
+        sendMessage();
+      });
+      return deferred;
     }
   };
 });
