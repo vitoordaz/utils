@@ -1,7 +1,7 @@
 /* jshint strict: true, browser: true */
 /* globals define, chrome */
 
-define('utils/credentials',['jquery', 'localstorage'], function($, localstorage) {
+define('utils/credentials',['jquery', 'underscore', 'localstorage'], function($, _, localstorage) {
   'use strict';
 
   return {
@@ -12,10 +12,14 @@ define('utils/credentials',['jquery', 'localstorage'], function($, localstorage)
     get: function() {
       var deferred = $.Deferred();
       localstorage.getItem('credentials', function(v) {
-        try {
-          deferred.resolve(JSON.parse(v));
-        } catch(e) {
-          deferred.reject(e);
+        if (!_.isString(v)) {
+          deferred.resolve(v);
+        } else {
+          try {
+            deferred.resolve(JSON.parse(v));
+          } catch (e) {
+            deferred.reject(e);
+          }
         }
       });
       return deferred;
