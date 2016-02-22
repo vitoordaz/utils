@@ -31,7 +31,7 @@ define(['jquery', 'underscore', 'localstorage'], function($, _, localstorage) {
      */
     set: function(credentials) {
       var sendMessage = function() {
-        if (chrome && chrome.runtime) {
+        if (chrome && chrome.runtime && chrome.runtime.id) {
           chrome.runtime.sendMessage(chrome.runtime.id, {
             event: 'credentials:updated'
           });
