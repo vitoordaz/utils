@@ -12630,15 +12630,8 @@ return jQuery;
 /* jshint strict: true */
 /* globals define, localStorage, chrome, setTimeout */
 
-define('localstorage',[],function() {
+define('localstorage',['underscore'], function(_) {
   'use strict';
-
-  var defer = function(func) {
-    var args = Array.prototype.slice.call(arguments, 2);
-    return setTimeout(function() {
-      return func.apply(null, args);
-    }, 1);
-  };
 
   var noop = function() {};
 
@@ -12659,7 +12652,7 @@ define('localstorage',[],function() {
         });
       },
       clear: function(cb) {
-        if (!INIT_WAS_CALLED) {
+        if (!INIT_WAS_CALLED && !cb) {
           throw Error('localstorage.init was not called');
         }
         cb = cb || noop;
@@ -12669,7 +12662,7 @@ define('localstorage',[],function() {
         CACHE = {};
       },
       setItem: function(name, value, cb) {
-        if (!INIT_WAS_CALLED) {
+        if (!INIT_WAS_CALLED && !cb) {
           throw Error('localstorage.init was not called');
         }
         cb = cb || noop;
@@ -12681,7 +12674,7 @@ define('localstorage',[],function() {
         CACHE[name] = value;
       },
       getItem: function(name, cb) {
-        if (!INIT_WAS_CALLED) {
+        if (!INIT_WAS_CALLED && !cb) {
           throw Error('localstorage.init was not called');
         }
         cb = cb || noop;
@@ -12694,7 +12687,7 @@ define('localstorage',[],function() {
         return CACHE[name];
       },
       removeItem: function(name, cb) {
-        if (!INIT_WAS_CALLED) {
+        if (!INIT_WAS_CALLED && !cb) {
           throw Error('localstorage.init was not called');
         }
         cb = cb || noop;
@@ -12707,11 +12700,30 @@ define('localstorage',[],function() {
   }
 
   return {
-    init: defer,
-    clear: localStorage.clear.bind(localStorage),
-    setItem: localStorage.setItem.bind(localStorage),
-    getItem: localStorage.getItem.bind(localStorage),
-    removeItem: localStorage.removeItem.bind(localStorage)
+    init: _.defer,
+    clear: function(cb) {
+      _.defer(function() {
+        localStorage.clear();
+        (cb || noop)();
+      });
+    },
+    setItem: function(key, value, cb) {
+      _.defer(function() {
+        localStorage.setItem(key, value);
+        (cb || noop)();
+      });
+    },
+    getItem: function(key, cb) {
+      _.defer(function() {
+        (cb || noop)(localStorage.getItem(key));
+      });
+    },
+    removeItem: function(key, cb) {
+      _.defer(function() {
+        localStorage.removeItem(key);
+        (cb || noop)();
+      });
+    }
   };
 });
 
@@ -12749,7 +12761,7 @@ define('utils/credentials',['jquery', 'underscore', 'localstorage'], function($,
      */
     set: function(credentials) {
       var sendMessage = function() {
-        if (chrome && chrome.runtime) {
+        if (chrome && chrome.runtime && chrome.runtime.id) {
           chrome.runtime.sendMessage(chrome.runtime.id, {
             event: 'credentials:updated'
           });

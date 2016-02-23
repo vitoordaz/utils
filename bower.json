@@ -16,6 +16,6 @@
   "devDependencies": {
     "requirejs": "latest",
     "mocha": "latest",
-    "should": "latest"
+    "should": "7.1.1"
   }
 }
